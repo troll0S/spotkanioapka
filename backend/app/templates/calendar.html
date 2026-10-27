@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ session.name }}</title>
+    <style>{{ css }}</style>
+  </head>
+  <body>
+    <h1>{{ session.name }}</h1>
+    <div class="meta">
+      Plan ustalony wspólnie{% if generated %} · wygenerowano {{ generated }}{% endif %}
+    </div>
+
+    {% if calendar.events %}
+
+      {% if layout == "calendar" and calendar.months %}
+        {% for month in calendar.months %}
+          <div class="month">
+            <div class="month-title">{{ month.label }}</div>
+
+            <div class="grid-head">
+              {% for d in calendar.weekdays %}<div class="weekday">{{ d }}</div>{% endfor %}
+            </div>
+
+            {% for week in month.weeks %}
+              <div class="week">
+                <div class="days">
+                  {% for day in week.days %}
+                    <div class="day{% if not day.inMonth %} outside{% endif %}{% if day.isWeekend %} weekend{% endif %}">
+                      {{ day.day }}
+                    </div>
+                  {% endfor %}
+                </div>
+
+                {# Pasy wstawiamy na tę samą siatkę siedmiu kolumn, z pozycją
+                   policzoną po stronie serwera — dokładnie tę samą, której
+                   używa widok w przeglądarce. #}
+                <div class="bands" style="grid-template-rows: repeat({{ [week.lanes, 1] | max }}, auto)">
+                  {% for band in week.bands %}
+                    <div class="band c{{ band.colorIndex }}"
+                         style="grid-column: {{ band.startCol + 1 }} / span {{ band.span }}; grid-row: {{ band.lane + 1 }}">
+                      {%- if band.continuesLeft %}‹ {% endif -%}
+                      {%- if band.isSpecial %}* {% endif -%}
+                      {{ band.title }}
+                      {%- if band.continuesRight %} ›{% endif -%}
+                    </div>
+                  {% endfor %}
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      <h2>Wydarzenia ({{ calendar.events | length }})</h2>
+
+      {% for event in calendar.events %}
+        <div class="event">
+          <div class="event-title">
+            {%- if event.isSpecial %}* {% endif -%}
+            {{ event.title }}
+          </div>
+          {% if event.schedule %}
+            <div class="event-term">{{ event.schedule.label }}</div>
+          {% endif %}
+          {% if event.description %}
+            <p class="event-desc">{{ event.description }}</p>
+          {% endif %}
+
+          <div class="event-people">
+            <span class="label">Kto to zrobi:</span>
+            {% if event.assigned %}
+              <span class="assigned">
+                {{ event.assigned | map(attribute="name") | join(", ") }}
+              </span>
+            {% else %}
+              <span class="empty">nikt nie przypisany</span>
+            {% endif %}
+          </div>
+
+          <div class="tally">
+            {%- set parts = [] -%}
+            {%- for value, label in answer_order -%}
+              {%- if event.tally.get(value) -%}
+                {%- set _ = parts.append(event.tally[value] ~ " " ~ label) -%}
+              {%- endif -%}
+            {%- endfor -%}
+            {% if parts %}{{ parts | join(" · ") }}{% else %}nikt nie odpowiedział{% endif %}
+          </div>
+
+          {% if event.level == "blocked" %}
+            <div class="warn">Sporo osób zaznaczyło „absolutnie nie".</div>
+          {% endif %}
+        </div>
+      {% endfor %}
+
+    {% else %}
+      <p class="empty">Nie zaplanowano żadnego wydarzenia.</p>
+    {% endif %}
+  </body>
+</html>

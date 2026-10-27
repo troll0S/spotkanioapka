@@ -1,0 +1,37 @@
+# Tryb docelowy — jeden kontener, jeden port, zbudowany frontend w środku.
+#
+#   docker compose up --build                  → tryb lokalny (jedno Wi-Fi)
+#   docker compose --profile remote up --build → dodatkowo tunel Cloudflare
+#
+# Tryb deweloperski z hot-reloadem: patrz docker-compose.dev.yml
+
+services:
+  app:
+    build: .
+    # "8000:8000", a NIE "127.0.0.1:8000:8000" — telefony muszą dosięgnąć.
+    # Port po lewej da się zmienić, gdy 8000 jest zajęty albo gdy chcesz
+    # postawić drugą instancję obok działającej.
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      # Baza przeżywa restart i przebudowę kontenera.
+      - ./data:/data
+    environment:
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-}
+      - PUBLIC_URL=${PUBLIC_URL:-}
+      # Nadpisywalne, żeby dało się uruchomić aplikację na czystej bazie
+      # bez ruszania tej właściwej — przydaje się przy sprawdzaniu zachowań
+      # pierwszego uruchomienia.
+      - DB_PATH=${DB_PATH:-/data/spotkania.db}
+    restart: unless-stopped
+
+  # Tryb zdalny (kamień KZ) — uruchamiany tylko z profilem:
+  #   docker compose --profile remote up
+  # Publiczny adres HTTPS pojawia się w logach tego kontenera.
+  tunnel:
+    image: cloudflare/cloudflared:latest
+    profiles: ["remote"]
+    command: tunnel --no-autoupdate --url http://app:8000
+    depends_on:
+      - app
+    restart: unless-stopped

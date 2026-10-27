@@ -1,0 +1,42 @@
+# Tryb deweloperski — dwa procesy, oba z hot-reloadem.
+#
+#   docker compose -f docker-compose.dev.yml up --build
+#
+# Wchodzisz na port 5173 (Vite), nie 8000. Vite serwuje frontend i przekazuje
+# /api oraz /ws do backendu. Dzięki temu zmiana w .tsx jest widoczna od razu,
+# a zmiana w .py restartuje tylko uvicorna — bez przebudowy obrazu.
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      # Bind-mount całego backendu: edytujesz na Windowsie, uvicorn przeładowuje
+      # w kontenerze. Wchodzą też migracje i testy, więc pytest działa przez
+      #   docker compose -f docker-compose.dev.yml exec backend pytest
+      - ./backend:/app
+      - ./data:/data
+    ports:
+      - "8000:8000"
+    environment:
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-dev}
+      - PUBLIC_URL=${PUBLIC_URL:-}
+      - DB_PATH=/data/spotkania.db
+      # Brak STATIC_DIR — w dev frontend idzie z Vite, nie z kontenera.
+
+  frontend:
+    image: node:22-alpine
+    working_dir: /app
+    command: sh -c "npm install && npm run dev"
+    volumes:
+      - ./frontend:/app
+      # Anonimowy wolumen: node_modules zostają w kontenerze (linuksowe binaria)
+      # i nie mieszają się z ewentualnym node_modules z Windowsa.
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_PROXY_TARGET=http://backend:8000
+    depends_on:
+      - backend

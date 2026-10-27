@@ -1,0 +1,189 @@
+/* Wspólny styl wydruków. Osobny plik, żeby dało się go podejrzeć
+   w przeglądarce — szablon jest zwykłym HTML-em i renderuje się tak samo. */
+
+@page {
+  size: A4;
+  margin: 16mm 14mm 18mm;
+
+  @bottom-center {
+    content: counter(page) " / " counter(pages);
+    font-family: "DejaVu Sans", sans-serif;
+    font-size: 8pt;
+    color: #888;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  /* DejaVu jest jedynym fontem w obrazie i ma komplet polskich znaków.
+     Bez wskazania go wprost WeasyPrint sięgnąłby po domyślny, którego
+     w obrazie nie ma. */
+  font-family: "DejaVu Sans", sans-serif;
+  font-size: 9.5pt;
+  line-height: 1.45;
+  color: #1a1a1a;
+  margin: 0;
+}
+
+h1 {
+  font-size: 17pt;
+  margin: 0 0 2mm;
+}
+
+h2 {
+  font-size: 11pt;
+  margin: 8mm 0 3mm;
+  padding-bottom: 1.5mm;
+  border-bottom: 0.4mm solid #ddd;
+}
+
+.meta {
+  color: #777;
+  font-size: 8.5pt;
+  margin-bottom: 6mm;
+}
+
+/* ── kalendarz ───────────────────────────────────────────────────────── */
+
+.month {
+  margin-bottom: 7mm;
+  /* Miesiąc rozerwany między strony jest nieczytelny. */
+  break-inside: avoid;
+}
+
+.month-title {
+  font-size: 11pt;
+  font-weight: bold;
+  margin-bottom: 2mm;
+  text-transform: capitalize;
+}
+
+.grid-head,
+.days,
+.bands {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.4mm;
+}
+
+.weekday {
+  text-align: center;
+  font-size: 7pt;
+  text-transform: uppercase;
+  color: #888;
+  padding-bottom: 1mm;
+}
+
+.week {
+  margin-bottom: 0.4mm;
+  break-inside: avoid;
+}
+
+.day {
+  padding: 0.8mm 1.2mm;
+  text-align: right;
+  font-size: 7.5pt;
+  background: #f4f5f7;
+  border-radius: 0.8mm 0.8mm 0 0;
+}
+
+.day.outside {
+  color: #bbb;
+}
+
+.day.weekend {
+  color: #b45309;
+}
+
+.bands {
+  background: #f4f5f7;
+  border-radius: 0 0 0.8mm 0.8mm;
+  padding-bottom: 0.8mm;
+  min-height: 3mm;
+}
+
+.band {
+  padding: 0.5mm 1.2mm;
+  font-size: 6.8pt;
+  font-weight: bold;
+  border-radius: 0.8mm;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  color: #1a1a1a;
+}
+
+/* Te same osiem odcieni co na ekranie — wydruk ma być rozpoznawalny
+   dla kogoś, kto patrzył wcześniej na kalendarz w przeglądarce. */
+.c0 { background: #7dd3fc; }
+.c1 { background: #a7f3d0; }
+.c2 { background: #fde68a; }
+.c3 { background: #fbcfe8; }
+.c4 { background: #c7d2fe; }
+.c5 { background: #bbf7d0; }
+.c6 { background: #fed7aa; }
+.c7 { background: #ddd6fe; }
+
+/* ── lista wydarzeń ──────────────────────────────────────────────────── */
+
+.event {
+  padding: 2.5mm 0;
+  border-bottom: 0.2mm solid #eee;
+  break-inside: avoid;
+}
+
+.event-title {
+  font-size: 10.5pt;
+  font-weight: bold;
+}
+
+.event-term {
+  color: #0369a1;
+  font-weight: bold;
+  font-size: 9pt;
+}
+
+.event-desc {
+  margin: 1mm 0 0;
+  color: #444;
+}
+
+.event-people {
+  margin-top: 1.5mm;
+}
+
+.label {
+  font-size: 7.5pt;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: #888;
+}
+
+.assigned {
+  font-weight: bold;
+}
+
+.tally {
+  margin-top: 1mm;
+  font-size: 8pt;
+  color: #666;
+}
+
+.warn {
+  margin-top: 1mm;
+  font-size: 8pt;
+  color: #b91c1c;
+}
+
+.reason {
+  font-size: 8pt;
+  color: #b45309;
+}
+
+.empty {
+  color: #888;
+  font-style: italic;
+}

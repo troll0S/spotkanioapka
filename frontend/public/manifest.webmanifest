@@ -1,0 +1,39 @@
+{
+  "name": "Spotkaniooapka",
+  "short_name": "Spotkanio",
+  "description": "Wspólne planowanie spotkań — laptop prowadzi, telefony dołączają.",
+  "lang": "pl",
+  "dir": "ltr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0f172a",
+  "theme_color": "#0f172a",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Dołącz do sesji",
+      "short_name": "Dołącz",
+      "url": "/join"
+    },
+    {
+      "name": "Prowadzę sesję",
+      "short_name": "Prowadzę",
+      "url": "/host"
+    }
+  ]
+}

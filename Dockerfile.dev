@@ -1,0 +1,26 @@
+# Obraz deweloperski backendu: bez budowania frontendu, bo w trybie dev
+# serwuje go Vite z hot-reloadem. Kod wchodzi bind-mountem, nie COPY,
+# więc tutaj instalujemy tylko zależności — w tym narzędzia testowe.
+FROM python:3.13-slim
+
+WORKDIR /app
+
+# To samo co w obrazie docelowym — testy renderują prawdziwe PDF-y.
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        libpango-1.0-0 \
+        libpangoft2-1.0-0 \
+        libharfbuzz-subset0 \
+        fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY backend/requirements.txt backend/requirements-dev.txt ./
+RUN pip install --no-cache-dir -r requirements-dev.txt
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    DEV_MODE=1 \
+    DB_PATH=/data/spotkania.db
+
+EXPOSE 8000
+
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]

@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="pl">
+  <head>
+    <meta charset="utf-8" />
+    <title>{{ session.name }} — odrzucone</title>
+    <style>{{ css }}</style>
+  </head>
+  <body>
+    <h1>{{ session.name }} — odrzucone pomysły</h1>
+    <div class="meta">
+      To, co nie weszło do planu{% if generated %} · wygenerowano {{ generated }}{% endif %}
+    </div>
+
+    {% if rejected %}
+      {% for item in rejected %}
+        <div class="event">
+          <div class="event-title">
+            {%- if item.isSpecial %}* {% endif -%}
+            {{ item.title }}
+          </div>
+          <div class="reason">{{ item.reason }}</div>
+          {% if item.description %}
+            <p class="event-desc">{{ item.description }}</p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="empty">Nic nie odpadło — wszystko trafiło do planu.</p>
+    {% endif %}
+  </body>
+</html>

@@ -1,0 +1,29 @@
+# Sekrety
+.env
+
+# Dane sesji (baza SQLite od K1)
+/data/
+
+# Kopie zapasowe — to te same dane, tylko w kilku egzemplarzach
+/backups/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+frontend/dist/
+
+# IDE
+.idea/
+.vscode/
+
+# Lokalne ustawienia Claude Code
+.claude/settings.local.json
+
+# Notatki robocze — tylko lokalnie
+/opis
+/PLAN.md
+/ARCHITEKTURA.md
